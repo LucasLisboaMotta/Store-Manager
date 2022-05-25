@@ -105,29 +105,71 @@ describe("Testando Model Sale", () => {
 
     it("testando o argumento usado no conection", async () => {
       sinon.spy(connection, "execute")
-      await salesModel.getPost('2022-05-10 10:10:10');
+      await salesModel.post('2022-05-10 10:10:10');
       const spyCall = connection.execute.getCall(0)
       const query = 'INSERT INTO sales (date) VALUES (?);'
       expect(spyCall.args).to.equal([query, ['2022-05-10 10:10:10']]);
     });
 
     it("retorna um objeto", async () => {
-      const response = await salesModel.getPost('2022-05-10 10:10:10');
+      const response = await salesModel.post('2022-05-10 10:10:10');
       expect(response).to.be.a("object");
     });
 
     it("se o objeto possui o id correto", async () => {
-      const response = await salesModel.getPost('2022-05-10 10:10:10');
+      const response = await salesModel.post('2022-05-10 10:10:10');
       expect(response.insertId).to.equal(10);
     });
   });
 
-  describe("Testando put do Sales", async () => {
+  describe("Testando Put do Sales", async () => {
     const sales = [
       {
         fieldCount: 0,
         affectedRows: 1,
-        insertId: 10,
+        insertId: 0,
+        info: 'Rows matched: 1  Changed: 1  Warnings: 0',
+        serverStatus: 2,
+        warningStatus: 0,
+        changedRows: 1
+      },
+      undefined
+    ];
+
+    beforeEach(async () => {
+      const execute = sales;
+      sinon.stub(connection, "execute").resolves(execute);
+    });
+
+    afterEach(async () => {
+      connection.execute.restore();
+    });
+
+    it("testando o argumento usado no conection", async () => {
+      sinon.spy(connection, "execute")
+      await salesModel.put(1, '2022-05-10 20:20:20');
+      const spyCall = connection.execute.getCall(0)
+      const query = 'UPDATE sale SET date = ? WHERE id = ?;'
+      expect(spyCall.args).to.equal([query, ['2022-05-10 20:20:20', 1]]);
+    });
+
+    it("retorna um objeto", async () => {
+      const response = await salesModel.put(1, '2022-05-10 20:20:20');
+      expect(response).to.be.a("object");
+    });
+
+    it("se o objeto possui o id correto", async () => {
+      const response = await salesModel.put(1, '2022-05-10 20:20:20');
+      expect(response.affectedRows).to.equal(1);
+    });
+  });
+
+  describe("Testando Delete do Sales", async () => {
+    const sales = [
+      {
+        fieldCount: 0,
+        affectedRows: 1,
+        insertId: 0,
         info: '',
         serverStatus: 2,
         warningStatus: 0
@@ -146,20 +188,20 @@ describe("Testando Model Sale", () => {
 
     it("testando o argumento usado no conection", async () => {
       sinon.spy(connection, "execute")
-      await salesModel.getPost('2022-05-10 10:10:10');
+      await salesModel.delete(1);
       const spyCall = connection.execute.getCall(0)
-      const query = 'INSERT INTO sales (date) VALUES (?);'
-      expect(spyCall.args).to.equal([query, ['2022-05-10 10:10:10']]);
+      const query = 'DELETE FROM sales WHERE id = ?;'
+      expect(spyCall.args).to.equal([query, [1]]);
     });
 
     it("retorna um objeto", async () => {
-      const response = await salesModel.getPost('2022-05-10 10:10:10');
+      const response = await salesModel.delete(1);
       expect(response).to.be.a("object");
     });
 
     it("se o objeto possui o id correto", async () => {
-      const response = await salesModel.getPost('2022-05-10 10:10:10');
-      expect(response.insertId).to.equal(10);
+      const response = await salesModel.delete(1);
+      expect(response.affectedRows).to.equal(1);
     });
   });
 });
