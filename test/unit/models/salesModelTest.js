@@ -1,207 +1,154 @@
 
-// const sinon = require("sinon");
-// const { expect } = require("chai");
-// const connection = require("../../../models/concection");
-// const salesModel = require("../../../models/salesModel");
+const sinon = require("sinon");
+const { expect } = require("chai");
+const connection = require("../../../models/concection");
+const salesModel = require("../../../models/salesModel");
 
-// describe("Testando Model Sale", () => {
+// const call = async () => {
+//   const call = await salesModel.getAll()
+//   console.log(call)
+// }
+// call();
 
-//   describe("Testando GetAll do Sales", async () => {
-//     const sales = [ 
-//       { id: 1, date: '2022-05-10 10:10:10' },
-//       { id: 2, date: '2022-05-11 20:20:20' }
-//     ];
+describe("Testando Model sales", () => {
+  describe("Testando GetAll do sales", async () => {
+    const mock = [
+      [
+        {
+          saleId: 1,
+          date: '2022-05-26T15:28:35.000Z',
+          productId: 1,
+          quantity: 5
+        },
+        {
+          saleId: 1,
+          date: '2022-05-26T15:28:35.000Z',
+          productId: 2,
+          quantity: 10
+        },
+        {
+          saleId: 2,
+          date: '2022-05-26T15:28:35.000Z',
+          productId: 3,
+          quantity: 15
+        }
+      ],
+      []
+    ];
+    beforeEach(async () => {
+      const execute = mock;
+      sinon.stub(connection, "execute").resolves(execute);
+    });
 
-//     beforeEach(async () => {
-//       const execute = [sales];
-//       sinon.stub(connection, "execute").resolves(execute);
-//     });
+    afterEach(async () => {
+      connection.execute.restore();
+    });
 
-//     afterEach(async () => {
-//       connection.execute.restore();
-//     });
+    it("Testando os argumentos usados na função", async () => {
+    await salesModel.getAll();
+    const spyCall = connection.execute.getCall(0);
+    const query = `
+    SELECT
+    sales.id AS saleId,
+    sales.date,
+    sales_products.product_id AS productId,
+    sales_products.quantity
+    FROM sales
+    INNER JOIN sales_products
+    ON sales.id = sales_products.sale_id
+    ORDER BY saleId, productId
+    ;`;;
+    expect(spyCall.args).to.deep.equal([query]);
+    }) 
 
-//     it("testando o argumento usado no connection", async () => {
-//       sinon.spy(connection, "execute")
-//       await salesModel.getAll();
-//       const spyCall = connection.execute.getCall(0)
-//       const query = 'SELECT * FROM sales'
-//       expect(spyCall.args).to.equal([query]);
-//     });
+    it("Testando o retorno da função", async () => {
+      const result = await salesModel.getAll();
+      const expectReturn = [
+        {
+          saleId: 1,
+          date: '2022-05-26T15:28:35.000Z',
+          productId: 1,
+          quantity: 5
+        },
+        {
+          saleId: 1,
+          date: '2022-05-26T15:28:35.000Z',
+          productId: 2,
+          quantity: 10
+        },
+        {
+          saleId: 2,
+          date: '2022-05-26T15:28:35.000Z',
+          productId: 3,
+          quantity: 15
+        }
+      ];
+      expect(result).to.deep.equal(expectReturn);
+    }) 
+  })
 
-//     it("retorna um array", async () => {
-//       const response = await salesModel.getAll();
-//       expect(response).to.be.a("array");
-//     });
+  describe("Testando GetById do sales", async () => {
+    const mock = [
+      [
+        {
+          saleId: 1,
+          date: '2022-05-26T15:28:35.000Z',
+          productId: 1,
+          quantity: 5
+        },
+        {
+          saleId: 1,
+          date: '2022-05-26T15:28:35.000Z',
+          productId: 2,
+          quantity: 10
+        }
+      ],
+      []
+    ];;
 
-//     it("se o array possui objetos dentro", async () => {
-//       const response = await salesModel.getAll();
-//       expect(response[0]).to.be.a("object");
-//     });
+    beforeEach(async () => {
+      const execute = mock;
+      sinon.stub(connection, "execute").resolves(execute);
+    });
 
-//     it("se os objetos estão na forma correta", async () => {
-//       const response = await salesModel.getAll();
-//       expect(response[0]).to.equal({ id: 1, date: '2022-05-10 10:10:10' });
-//       expect(response[1]).to.equal({ id: 2, date: '2022-05-11 20:20:20' });
-//     });
+    afterEach(async () => {
+      connection.execute.restore();
+    });
 
-//   });
+    it("Testando os argumentos usados na função", async () => {
+    await salesModel.getById(1);
+    const spyCall = connection.execute.getCall(0);
+    const query = `
+    SELECT 
+    sales.date,
+    sales_products.product_id AS productId,
+    sales_products.quantity
+    FROM sales
+    INNER JOIN sales_products
+    ON sales.id = sales_products.sale_id
+    where sales.id = ?
+    ORDER BY productId
+    ;`;
+    expect(spyCall.args).to.deep.equal([query, [1]]);
+    }) 
 
-//   describe("Testando GetById do Sales", async () => {
-//     const sales = [ 
-//       { id: 1, date: '2022-05-10 10:10:10' }
-//     ];
-
-//     beforeEach(async () => {
-//       const execute = [sales];
-//       sinon.stub(connection, "execute").resolves(execute);
-//     });
-
-//     afterEach(async () => {
-//       connection.execute.restore();
-//     });
-
-//     it("testando o argumento usado no conection", async () => {
-//       sinon.spy(connection, "execute")
-//       await salesModel.getById(1);
-//       const spyCall = connection.execute.getCall(0);
-//       const query = 'SELECT * FROM sales WHERE id = ?';
-//       expect(spyCall.args).to.equal([query, [1]]);
-//     });
-
-//     it("retorna um objeto", async () => {
-//       const response = await salesModel.getById(1);
-//       expect(response).to.be.a("object");
-//     });
-
-//     it("se o objeto esta na forma correta", async () => {
-//       const response = await salesModel.getById(1);
-//       expect(response).to.equal({ id: 1, date: '2022-05-10 10:10:10' });
-//     });
-
-//   });
-
-//   describe("Testando post do Sales", async () => {
-//     const sales = [
-//       {
-//         fieldCount: 0,
-//         affectedRows: 1,
-//         insertId: 10,
-//         info: '',
-//         serverStatus: 2,
-//         warningStatus: 0
-//       },
-//       undefined
-//     ];
-
-//     beforeEach(async () => {
-//       const execute = sales;
-//       sinon.stub(connection, "execute").resolves(execute);
-//     });
-
-//     afterEach(async () => {
-//       connection.execute.restore();
-//     });
-
-//     it("testando o argumento usado no conection", async () => {
-//       sinon.spy(connection, "execute")
-//       await salesModel.post('2022-05-10 10:10:10');
-//       const spyCall = connection.execute.getCall(0)
-//       const query = 'INSERT INTO sales (date) VALUES (?);'
-//       expect(spyCall.args).to.equal([query, ['2022-05-10 10:10:10']]);
-//     });
-
-//     it("retorna um objeto", async () => {
-//       const response = await salesModel.post('2022-05-10 10:10:10');
-//       expect(response).to.be.a("object");
-//     });
-
-//     it("se o objeto possui o id correto", async () => {
-//       const response = await salesModel.post('2022-05-10 10:10:10');
-//       expect(response.insertId).to.equal(10);
-//     });
-//   });
-
-//   describe("Testando Put do Sales", async () => {
-//     const sales = [
-//       {
-//         fieldCount: 0,
-//         affectedRows: 1,
-//         insertId: 0,
-//         info: 'Rows matched: 1  Changed: 1  Warnings: 0',
-//         serverStatus: 2,
-//         warningStatus: 0,
-//         changedRows: 1
-//       },
-//       undefined
-//     ];
-
-//     beforeEach(async () => {
-//       const execute = sales;
-//       sinon.stub(connection, "execute").resolves(execute);
-//     });
-
-//     afterEach(async () => {
-//       connection.execute.restore();
-//     });
-
-//     it("testando o argumento usado no conection", async () => {
-//       sinon.spy(connection, "execute")
-//       await salesModel.put(1, '2022-05-10 20:20:20');
-//       const spyCall = connection.execute.getCall(0)
-//       const query = 'UPDATE sale SET date = ? WHERE id = ?;'
-//       expect(spyCall.args).to.equal([query, ['2022-05-10 20:20:20', 1]]);
-//     });
-
-//     it("retorna um objeto", async () => {
-//       const response = await salesModel.put(1, '2022-05-10 20:20:20');
-//       expect(response).to.be.a("object");
-//     });
-
-//     it("se o objeto possui o id correto", async () => {
-//       const response = await salesModel.put(1, '2022-05-10 20:20:20');
-//       expect(response.affectedRows).to.equal(1);
-//     });
-//   });
-
-//   describe("Testando Delete do Sales", async () => {
-//     const sales = [
-//       {
-//         fieldCount: 0,
-//         affectedRows: 1,
-//         insertId: 0,
-//         info: '',
-//         serverStatus: 2,
-//         warningStatus: 0
-//       },
-//       undefined
-//     ];
-
-//     beforeEach(async () => {
-//       const execute = sales;
-//       sinon.stub(connection, "execute").resolves(execute);
-//     });
-
-//     afterEach(async () => {
-//       connection.execute.restore();
-//     });
-
-//     it("testando o argumento usado no conection", async () => {
-//       sinon.spy(connection, "execute")
-//       await salesModel.delete(1);
-//       const spyCall = connection.execute.getCall(0)
-//       const query = 'DELETE FROM sales WHERE id = ?;'
-//       expect(spyCall.args).to.equal([query, [1]]);
-//     });
-
-//     it("retorna um objeto", async () => {
-//       const response = await salesModel.delete(1);
-//       expect(response).to.be.a("object");
-//     });
-
-//     it("se o objeto possui o id correto", async () => {
-//       const response = await salesModel.delete(1);
-//       expect(response.affectedRows).to.equal(1);
-//     });
-//   });
-// });
+    it("Testando o retorno da função", async () => {
+      const result = await salesModel.getById(1);
+      const expectReturn = [
+        {
+          saleId: 1,
+          date: '2022-05-26T15:28:35.000Z',
+          productId: 1,
+          quantity: 5
+        },
+        {
+          saleId: 1,
+          date: '2022-05-26T15:28:35.000Z',
+          productId: 2,
+          quantity: 10
+        }
+      ];
+      expect(result).to.deep.equal(expectReturn);
+    }) 
+  })
+})
