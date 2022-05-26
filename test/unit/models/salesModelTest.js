@@ -6,7 +6,7 @@ const salesModel = require("../../../models/salesModel");
 
 // const call = async () => {
 //   const call = await salesModel.getAll()
-//   console.log(call)
+//   console.log(String(call[0].date))
 // }
 // call();
 

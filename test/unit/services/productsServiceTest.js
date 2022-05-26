@@ -33,7 +33,7 @@ describe("Testando Service Products", () => {
     it("Verificando o retorno da função", async () => {
       const mock = { id: 1, name: 'Martelo de Thor', quantity: 10 };
       sinon.stub(productsModel, "getById").resolves(mock);
-      const result = await productsService.getById(1);
+      const result = await productsService.getById({ params: { id: '1'} });
       expect(result).to.deep.equal(mock);
       productsModel.getById.restore();
     })
@@ -42,7 +42,7 @@ describe("Testando Service Products", () => {
     const mock = undefined;
     sinon.stub(productsModel, "getById").resolves(mock);
     const result = productsService.getById;
-    await expect(result()).to.be.rejectedWith(Error);
+    await expect(result({ params: { id: '10'} })).to.be.rejectedWith({ status: 404, message: 'Product not found'});
     productsModel.getById.restore();
     })
   })

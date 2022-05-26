@@ -49,7 +49,7 @@ describe("Testando Service sales", () => {
        { date: '2022-05-26T17:06:00.000Z', productId: 2, quantity: 10 }
       ];
       sinon.stub(salesModel, "getById").resolves(mock);
-      const result = await salesService.getById(1);
+      const result = await salesService.getById({ params: { id: '1'} });
       expect(result).to.deep.equal(mock);
       salesModel.getById.restore();
     })
@@ -58,7 +58,7 @@ describe("Testando Service sales", () => {
     const mock = [];
     sinon.stub(salesModel, "getById").resolves(mock);
     const result = salesService.getById;
-    await expect(result()).to.be.rejectedWith(Error);
+    await expect(result({ params: { id: '10'} })).to.be.rejectedWith({ status: 404, message: 'Sale not found'});
     salesModel.getById.restore();
     })
   })
