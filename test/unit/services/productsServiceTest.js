@@ -68,4 +68,26 @@ describe("Testando Service Products", () => {
     productsModel.post.restore();
     })
   })
+
+  describe("Testando put Products", async () => { 
+    const args = { params: { id: 1} , body: { name: 'Martelo de Thor', quantity: 10 } }   
+    it("Verificando o retorno da função", async () => {
+      const mock = { id: 1, name: 'Martelo de Thor', quantity: 10 };
+      sinon.stub(productsModel, "put").resolves();
+      sinon.stub(productsModel, "getById").resolves(mock);
+      const result = await productsService.put(args);
+      expect(result).to.deep.equal(mock);
+      productsModel.put.restore();
+      productsModel.getById.restore();
+    })
+
+    it("Verificando erro", async () => {
+    const mock = undefined;
+    sinon.stub(productsModel, "put").resolves();
+    sinon.stub(productsModel, "getById").resolves(mock);
+    await expect(productsService.put(args)).to.be.rejectedWith({ status: 404, message: 'Product not found'});
+    productsModel.put.restore();
+    productsModel.getById.restore();
+    })
+  })
 })

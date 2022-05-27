@@ -133,4 +133,27 @@ describe("Testando Model products", () => {
       expect(result).to.deep.equal(expectReturn);
     }) 
   })
+
+  describe("Testando Put do products", async () => {
+    const mock = [
+      { insertId: 10 },
+      undefined
+    ];
+
+    beforeEach(async () => {
+      const execute = mock;
+      sinon.stub(connection, "execute").resolves(execute);
+    });
+
+    afterEach(async () => {
+      connection.execute.restore();
+    });
+
+    it("Testando os argumentos usados na função", async () => {
+      await productsModel.put('Martelo de Thor', 8, 1);
+      const spyCall = connection.execute.getCall(0);
+      const query = 'UPDATE products SET name = ?, quantity = ? WHERE id = ?;';
+      expect(spyCall.args).to.deep.equal([query, ['Martelo de Thor', 8, 1]]);
+    }) 
+  })
 })
