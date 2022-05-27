@@ -127,4 +127,30 @@ describe("Testando Products da aba Controller", () => {
       productsService.put.restore();
     })
   })
+
+  describe("Testando o delete", async () => {
+    it('testando  o status do delete', async () => {
+      sinon.stub(productsService, "delete").resolves();
+      await productsControllers.delete(request, response);
+      expect(response.status.calledWith(204)).to.be.equal(true);;
+      productsService.delete.restore();
+    })
+
+    it('testando  o body do delete', async () => {
+      sinon.stub(productsService, "delete").resolves();
+      await productsControllers.delete(request, response);
+      expect(response.json.calledWith()).to.be.equal(true);;
+      productsService.delete.restore();
+    })
+
+    it('testando  o next do delete', async () => {
+
+      const mensage = { status: 404, mensage: 'Product not found'};
+      sinon.stub(productsService, "delete").throws(mensage);
+      const next = sinon.stub().returns();
+      await productsControllers.delete(request, response, next);
+      expect(next.calledWith(mensage)).to.be.equal(true);;
+      productsService.delete.restore();
+    })
+  })
 })

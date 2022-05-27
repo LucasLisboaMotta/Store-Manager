@@ -156,4 +156,27 @@ describe("Testando Model products", () => {
       expect(spyCall.args).to.deep.equal([query, ['Martelo de Thor', 8, 1]]);
     }) 
   })
+
+  describe("Testando Delete do products", async () => {
+    const mock = [
+      { affectedRows: 10 },
+      undefined
+    ];
+
+    beforeEach(async () => {
+      const execute = mock;
+      sinon.stub(connection, "execute").resolves(execute);
+    });
+
+    afterEach(async () => {
+      connection.execute.restore();
+    });
+
+    it("Testando os argumentos usados na função", async () => {
+      await productsModel.delete(1);
+      const spyCall = connection.execute.getCall(0);
+      const query = 'DELETE FROM products WHERE id = ?;';
+      expect(spyCall.args).to.deep.equal([query, [1]]);
+    }) 
+  })
 })

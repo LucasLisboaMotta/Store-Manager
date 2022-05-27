@@ -90,4 +90,26 @@ describe("Testando Service Products", () => {
     productsModel.getById.restore();
     })
   })
+
+  describe("Testando delete Products", async () => { 
+    const args = { params: { id: 1} }   
+    it("Verificando o retorno da função", async () => {
+      const mock = { id: 1, name: 'Martelo de Thor', quantity: 10 };
+      sinon.stub(productsModel, "delete").resolves();
+      sinon.stub(productsModel, "getById").resolves(mock);
+      const result = await productsService.delete(args);
+      expect(result).to.deep.equal(args.params.id);
+      productsModel.delete.restore();
+      productsModel.getById.restore();
+    })
+
+    it("Verificando erro", async () => {
+    const mock = undefined;
+    sinon.stub(productsModel, "delete").resolves();
+    sinon.stub(productsModel, "getById").resolves(mock);
+    await expect(productsService.delete(args)).to.be.rejectedWith({ status: 404, message: 'Product not found'});
+    productsModel.delete.restore();
+    productsModel.getById.restore();
+    })
+  })
 })
