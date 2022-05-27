@@ -21,4 +21,9 @@ module.exports = {
     const [{ insertId }] = await conection.execute(query, [name, quantity]);
     return insertId;
   },
+  put: async (name, quantity, id) => {
+    const query = 'UPDATE products SET name = ?, quantity = ? WHERE id = ?;';
+    const [{ affectedRows }] = await conection.execute(query, [name, quantity, id]);
+    return affectedRows;
+  },
 };

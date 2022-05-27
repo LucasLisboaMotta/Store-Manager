@@ -7,8 +7,6 @@ const router = express.Router();
 router.get('/', products.getAll);
 router.get('/:id', products.getById);
 router.post('/', valition.post, products.post);
-// router.post('/:id', valition.post);
-// router.put('/', valition.post);
-router.put('/:id', valition.post);
+router.put('/:id', valition.post, products.put);
 
 module.exports = router;
