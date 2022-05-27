@@ -12,4 +12,10 @@ module.exports = {
     if (result.length === 0) throw error(404, 'Sale not found');
     return result;
   },
+  post: async (req) => {
+    const { body } = req;
+    const id = await salesModel.postNewSale();
+    body.forEach((element) => salesModel.postSaleProduct(element, id));
+    return { id, itemsSold: body };
+  },
 };

@@ -31,4 +31,13 @@ module.exports = {
     const [result] = await conection.execute(query, [id]);
     return result;
   },
+  postNewSale: async () => {
+    const query = 'INSERT INTO sales (date) VALUES (NOW());';
+    const [{ insertId }] = await conection.execute(query);
+    return insertId;
+  },
+  postSaleProduct: async ({ quantity, productId }, id) => {
+    const query = 'INSERT INTO sales_products (sale_id, product_id, quantity) VALUES (?, ?, ?);';
+    await conection.execute(query, [id, productId, quantity]);
+  },
 };

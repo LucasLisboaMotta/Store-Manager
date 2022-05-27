@@ -13,4 +13,8 @@ module.exports = {
       next(err);
     }
   },
+  post: async (req, res) => {
+    const result = await salesServices.post(req);
+    return res.status(201).json(result);    
+  },
 };
