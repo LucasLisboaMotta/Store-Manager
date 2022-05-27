@@ -29,4 +29,12 @@ module.exports = {
       next(err);
     }
   },
+  delete: async (req, res, next) => {
+    try {
+      await productsServices.delete(req);
+      return res.status(204).json(); 
+    } catch (err) {
+      next(err);
+    }
+  },
 };

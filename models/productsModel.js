@@ -26,4 +26,9 @@ module.exports = {
     const [{ affectedRows }] = await conection.execute(query, [name, quantity, id]);
     return affectedRows;
   },
+  delete: async (id) => {
+    const query = 'DELETE FROM products WHERE id = ?;';
+    const [{ affectedRows }] = await conection.execute(query, [id]);
+    return affectedRows;
+  },
 };

@@ -27,4 +27,11 @@ module.exports = {
     await productsModel.put(name, quantity, id);
     return { id, name, quantity };
   },
+  delete: async (req) => {
+    const { id } = req.params;
+    const verify = await productsModel.getById(id);
+    if (!verify) throw error(404, 'Product not found');
+    await productsModel.delete(id);
+    return id;
+  },
 };
