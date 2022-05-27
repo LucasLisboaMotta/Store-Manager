@@ -12,4 +12,11 @@ module.exports = {
     if (!result) throw error(404, 'Product not found');
     return result;
   },
+  post: async (req) => {
+    const { name, quantity } = req.body;
+    const prevProduct = await productsModel.getByName(name);
+    if (prevProduct) throw error(409, 'Product already exists');
+    const id = await productsModel.post(name, quantity);
+    return { id, name, quantity };
+  },
 };

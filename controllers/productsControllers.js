@@ -13,4 +13,12 @@ module.exports = {
       next(err);
     }
   },
+  post: async (req, res, next) => {
+    try {
+      const result = await productsServices.post(req);
+      return res.status(201).json(result); 
+    } catch (err) {
+      next(err);
+    }
+  },
 };
