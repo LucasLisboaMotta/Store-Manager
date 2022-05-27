@@ -17,7 +17,7 @@ module.exports = {
     return result;
   },
   post: async (name, quantity) => {
-    const query = 'INSERT INTO StoreManager.products (name, quantity) VALUES (?, ?)';
+    const query = 'INSERT INTO products (name, quantity) VALUES (?, ?)';
     const [{ insertId }] = await conection.execute(query, [name, quantity]);
     return insertId;
   },

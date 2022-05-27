@@ -46,4 +46,26 @@ describe("Testando Service Products", () => {
     productsModel.getById.restore();
     })
   })
+
+  describe("Testando Post Products", async () => {    
+    it("Verificando o retorno da função", async () => {
+      const mock = { id: 1, name: 'Martelo de Thor', quantity: 10 };
+      sinon.stub(productsModel, "post").resolves(mock.id);
+      sinon.stub(productsModel, "getByName").resolves(undefined);
+      const result = await productsService.post({ body: { name: mock.name, quantity: mock.quantity} });
+      expect(result).to.deep.equal(mock);
+      productsModel.getByName.restore();
+      productsModel.post.restore();
+    })
+
+    it("Verificando erro", async () => {
+    const mock = { id: 1, name: 'Martelo de Thor', quantity: 10 };
+    sinon.stub(productsModel, "post").resolves(mock.id);
+    sinon.stub(productsModel, "getByName").resolves(mock);
+    const params = { body: { name: mock.name, quantity: mock.quantity} };
+    await expect(productsService.post(params)).to.be.rejectedWith({ status: 409, message: 'Product already exists'});
+    productsModel.getByName.restore();
+    productsModel.post.restore();
+    })
+  })
 })

@@ -71,5 +71,32 @@ describe("Testando Products da aba Controller", () => {
       productsService.getById.restore();
     })
   })
- 
+
+  describe("Testando o post", async () => {
+    it('testando  o status do post', async () => {
+      const mock = { id: 1, name: 'Martelo de Thor', quantity: 10 };
+      sinon.stub(productsService, "post").resolves(mock);
+      await productsControllers.post(request, response);
+      expect(response.status.calledWith(201)).to.be.equal(true);;
+      productsService.post.restore();
+    })
+
+    it('testando  o body do post', async () => {
+      const mock = { id: 1, name: 'Martelo de Thor', quantity: 10 };
+      sinon.stub(productsService, "post").resolves(mock);
+      await productsControllers.post(request, response);
+      expect(response.json.calledWith(mock)).to.be.equal(true);;
+      productsService.post.restore();
+    })
+
+    it('testando  o next do post', async () => {
+
+      const mensage = { status: 409, mensage: 'Product already exists'};
+      sinon.stub(productsService, "post").throws(mensage);
+      const next = sinon.stub().returns();
+      await productsControllers.post(request, response, next);
+      expect(next.calledWith(mensage)).to.be.equal(true);;
+      productsService.post.restore();
+    })
+  })  
 })
