@@ -25,4 +25,12 @@ module.exports = {
       next(err);
     }
   },
+  delete: async (req, res, next) => {
+    try {
+      await salesServices.delete(req);
+      return res.status(204).json(); 
+    } catch (err) {
+      next(err);
+    }
+  },
 };

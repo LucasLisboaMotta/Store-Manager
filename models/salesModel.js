@@ -44,4 +44,8 @@ module.exports = {
     const query = 'DELETE FROM sales_products WHERE sale_id = ?;';
     await conection.execute(query, [id]);
   },
+  deleteSales: async (id) => {
+    const query = 'DELETE FROM sales WHERE id = ?;';
+    await conection.execute(query, [id]);
+  },
 };

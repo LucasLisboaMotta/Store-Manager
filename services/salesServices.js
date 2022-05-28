@@ -26,4 +26,11 @@ module.exports = {
     body.forEach((element) => salesModel.postSaleProduct(element, id));
     return { saleId: id, itemUpdated: body };
   },
+  delete: async (req) => {
+    const { params: { id } } = req;
+    const result = await salesModel.getById(id);
+    if (result.length === 0) throw error(404, 'Sale not found');
+    await salesModel.deleteSaleProduct(id);
+    await salesModel.deleteSales(id);
+  },
 };
