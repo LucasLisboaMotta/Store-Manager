@@ -40,4 +40,8 @@ module.exports = {
     const query = 'INSERT INTO sales_products (sale_id, product_id, quantity) VALUES (?, ?, ?);';
     await conection.execute(query, [id, productId, quantity]);
   },
+  deleteSaleProduct: async (id) => {
+    const query = 'DELETE FROM sales_products WHERE sale_id = ?;';
+    await conection.execute(query, [id]);
+  },
 };

@@ -17,4 +17,12 @@ module.exports = {
     const result = await salesServices.post(req);
     return res.status(201).json(result);    
   },
+  put: async (req, res, next) => {
+    try {
+      const result = await salesServices.put(req);
+      return res.status(200).json(result); 
+    } catch (err) {
+      next(err);
+    }
+  },
 };
