@@ -89,4 +89,32 @@ describe("Testando sales da aba Controller", () => {
       salesService.post.restore();
     })
   })
+
+  describe("Testando o put", async () => {
+    it('testando  o status do put', async () => {
+      const mock = { id: 1, name: 'Martelo de Thor', quantity: 10 };
+      sinon.stub(salesService, "put").resolves(mock);
+      await salesControllers.put(request, response);
+      expect(response.status.calledWith(200)).to.be.equal(true);;
+      salesService.put.restore();
+    })
+
+    it('testando  o body do put', async () => {
+      const mock = { id: 1, name: 'Martelo de Thor', quantity: 10 };
+      sinon.stub(salesService, "put").resolves(mock);
+      await salesControllers.put(request, response);
+      expect(response.json.calledWith(mock)).to.be.equal(true);;
+      salesService.put.restore();
+    })
+
+    it('testando  o next do put', async () => {
+
+      const mensage = { status: 404, mensage: 'Sale not found'};
+      sinon.stub(salesService, "put").throws(mensage);
+      const next = sinon.stub().returns();
+      await salesControllers.put(request, response, next);
+      expect(next.calledWith(mensage)).to.be.equal(true);;
+      salesService.put.restore();
+    })
+  })
 })

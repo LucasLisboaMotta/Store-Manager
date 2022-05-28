@@ -45,7 +45,8 @@ describe("Testando Service sales", () => {
 
   describe("Testando GetById sales", async () => {    
     it("Verificando o retorno da função", async () => {
-      const mock = [{ date: '2022-05-26T17:06:00.000Z', productId: 1, quantity: 5 },
+      const mock = [
+       { date: '2022-05-26T17:06:00.000Z', productId: 1, quantity: 5 },
        { date: '2022-05-26T17:06:00.000Z', productId: 2, quantity: 10 }
       ];
       sinon.stub(salesModel, "getById").resolves(mock);
@@ -63,7 +64,6 @@ describe("Testando Service sales", () => {
     })
   })
 
-  //callCount
   describe("Testando Post sales", async () => {    
     it("Verificando o retorno da função", async () => {
       const args = { body: [{ productId: 1, quantity: 6 }] };
@@ -93,6 +93,65 @@ describe("Testando Service sales", () => {
       expect(spyCall2.args).to.deep.equal([{ productId: 9, quantity: 9 }, 3]);
       expect(spyCall3).to.deep.equal(null);
       salesModel.postNewSale.restore();
+      salesModel.postSaleProduct.restore();
+    })
+  })
+
+  describe("Testando Put sales", async () => {    
+    it("Verificando o retorno da função", async () => {
+      const args = { params: { id: '10' }, body: [{ productId: 1, quantity: 6 }] };
+      const mock = [
+        { date: '2022-05-26T17:06:00.000Z', productId: 1, quantity: 5 },
+        { date: '2022-05-26T17:06:00.000Z', productId: 2, quantity: 10 }
+       ];
+      sinon.stub(salesModel, "deleteSaleProduct").resolves();
+      sinon.stub(salesModel, "postSaleProduct").resolves();
+      sinon.stub(salesModel, "getById").resolves(mock);
+      const result = await salesService.put(args);
+      expect(result).to.deep.equal({ saleId: '10', itemUpdated: [{ productId: 1, quantity: 6 }]});
+      salesModel.deleteSaleProduct.restore();
+      salesModel.postSaleProduct.restore();
+      salesModel.getById.restore();
+    })
+
+    it("Verificando erro", async () => {
+      const mock = [];
+      const args = { params: { id: '10' }, body: [{ productId: 1, quantity: 6 }] };
+      sinon.stub(salesModel, "getById").resolves(mock);
+      sinon.stub(salesModel, "deleteSaleProduct").resolves();
+      sinon.stub(salesModel, "postSaleProduct").resolves();
+      await expect(salesService.put(args)).to.be.rejectedWith({ status: 404, message: 'Sale not found'});
+      salesModel.getById.restore();
+      salesModel.deleteSaleProduct.restore();
+      salesModel.postSaleProduct.restore();
+      })
+
+    it("Verificando o os argumentos usados na função salesMode.postSaleProduct", async () => {
+      const args = { 
+        params: { id: '10' },
+        body: [
+        { productId: 1, quantity: 6 },
+        { productId: 3, quantity: 7 },
+        { productId: 9, quantity: 9 }
+      ]};
+      const mock = [
+        { date: '2022-05-26T17:06:00.000Z', productId: 1, quantity: 5 },
+        { date: '2022-05-26T17:06:00.000Z', productId: 2, quantity: 10 }
+       ];
+      sinon.stub(salesModel, "getById").resolves(mock);
+      sinon.stub(salesModel, "deleteSaleProduct").resolves();
+      sinon.stub(salesModel, "postSaleProduct").resolves();
+      await salesService.put(args);
+      const spyCall0 = salesModel.postSaleProduct.getCall(0);
+      const spyCall1 = salesModel.postSaleProduct.getCall(1);
+      const spyCall2 = salesModel.postSaleProduct.getCall(2);
+      const spyCall3 = salesModel.postSaleProduct.getCall(3);
+      expect(spyCall0.args).to.deep.equal([{ productId: 1, quantity: 6 }, '10']);
+      expect(spyCall1.args).to.deep.equal([{ productId: 3, quantity: 7 }, '10']);
+      expect(spyCall2.args).to.deep.equal([{ productId: 9, quantity: 9 }, '10']);
+      expect(spyCall3).to.deep.equal(null);
+      salesModel.getById.restore();
+      salesModel.deleteSaleProduct.restore();
       salesModel.postSaleProduct.restore();
     })
   })

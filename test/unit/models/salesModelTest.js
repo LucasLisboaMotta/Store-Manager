@@ -195,4 +195,23 @@ describe("Testando Model sales", () => {
     expect(spyCall.args).to.deep.equal([query, [4, 2, 10]]);
     }) 
   })
+
+  describe("Testando deleteSaleProduct do sales", async () => {
+    const mock = [ { insertId: 1}, undefined ];
+    beforeEach(async () => {
+      sinon.stub(connection, "execute").resolves();
+    });
+
+    afterEach(async () => {
+      connection.execute.restore();
+    });
+
+    it("Testando os argumentos usados na função", async () => {
+    const args =  '10';
+    await salesModel.deleteSaleProduct(args);
+    const spyCall = connection.execute.getCall(0);
+    const query = 'DELETE FROM sales_products WHERE sale_id = ?;';
+    expect(spyCall.args).to.deep.equal([query, ['10']]);
+    }) 
+  })
 })
