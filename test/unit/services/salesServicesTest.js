@@ -155,4 +155,35 @@ describe("Testando Service sales", () => {
       salesModel.postSaleProduct.restore();
     })
   })
+
+  describe("Testando delete sales", async () => {    
+    it("Verificando o retorno da função", async () => {
+      const mock = [
+       { date: '2022-05-26T17:06:00.000Z', productId: 1, quantity: 5 },
+       { date: '2022-05-26T17:06:00.000Z', productId: 2, quantity: 10 }
+      ];
+      sinon.stub(salesModel, "getById").resolves(mock);
+      sinon.stub(salesModel, "deleteSaleProduct").resolves();
+      sinon.stub(salesModel, "deleteSales").resolves();
+      await salesService.delete({ params: { id: '1'} });
+      const spyCallGetById = salesModel.getById.getCall(0);
+      const spyCallDeleteSaleProduct = salesModel.deleteSaleProduct.getCall(0);
+      const spyCallDeleteSales = salesModel.deleteSales.getCall(0);
+      expect(spyCallGetById.args).to.deep.equal(['1']);
+      expect(spyCallDeleteSaleProduct.args).to.deep.equal(['1']);
+      expect(spyCallDeleteSales.args).to.deep.equal(['1']);
+      salesModel.getById.restore();
+      salesModel.deleteSaleProduct.restore();
+      salesModel.deleteSales.restore();
+    })
+
+    it("Verificando erro", async () => {
+    const mock = [];
+    sinon.stub(salesModel, "getById").resolves(mock);
+    const args = { params: { id: '10'} };
+    await expect(salesService.delete(args)).to.be.rejectedWith({ status: 404, message: 'Sale not found'});
+    salesModel.getById.restore();
+    })
+  })
+
 })

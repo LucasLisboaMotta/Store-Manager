@@ -178,7 +178,6 @@ describe("Testando Model sales", () => {
   })
 
   describe("Testando postSaleProduct do sales", async () => {
-    const mock = [ { insertId: 1}, undefined ];
     beforeEach(async () => {
       sinon.stub(connection, "execute").resolves();
     });
@@ -197,7 +196,6 @@ describe("Testando Model sales", () => {
   })
 
   describe("Testando deleteSaleProduct do sales", async () => {
-    const mock = [ { insertId: 1}, undefined ];
     beforeEach(async () => {
       sinon.stub(connection, "execute").resolves();
     });
@@ -211,6 +209,24 @@ describe("Testando Model sales", () => {
     await salesModel.deleteSaleProduct(args);
     const spyCall = connection.execute.getCall(0);
     const query = 'DELETE FROM sales_products WHERE sale_id = ?;';
+    expect(spyCall.args).to.deep.equal([query, ['10']]);
+    }) 
+  })
+
+  describe("Testando deleteSales do sales", async () => {
+    beforeEach(async () => {
+      sinon.stub(connection, "execute").resolves();
+    });
+
+    afterEach(async () => {
+      connection.execute.restore();
+    });
+
+    it("Testando os argumentos usados na função", async () => {
+    const args =  '10';
+    await salesModel.deleteSales(args);
+    const spyCall = connection.execute.getCall(0);
+    const query = 'DELETE FROM sales WHERE id = ?;';
     expect(spyCall.args).to.deep.equal([query, ['10']]);
     }) 
   })
