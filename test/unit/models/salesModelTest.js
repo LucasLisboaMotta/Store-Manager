@@ -151,4 +151,48 @@ describe("Testando Model sales", () => {
       expect(result).to.deep.equal(expectReturn);
     }) 
   })
+
+  describe("Testando postNewSale do sales", async () => {
+    const mock = [ { insertId: 1}, undefined ];
+    beforeEach(async () => {
+      const execute = mock;
+      sinon.stub(connection, "execute").resolves(execute);
+    });
+
+    afterEach(async () => {
+      connection.execute.restore();
+    });
+
+    it("Testando os argumentos usados na função", async () => {
+    await salesModel.postNewSale();
+    const spyCall = connection.execute.getCall(0);
+    const query = 'INSERT INTO sales (date) VALUES (NOW());';
+    expect(spyCall.args).to.deep.equal([query]);
+    }) 
+
+    it("Testando o retorno da função", async () => {
+      const result = await salesModel.postNewSale();
+      const expectReturn = 1
+      expect(result).to.deep.equal(expectReturn);
+    }) 
+  })
+
+  describe("Testando postSaleProduct do sales", async () => {
+    const mock = [ { insertId: 1}, undefined ];
+    beforeEach(async () => {
+      sinon.stub(connection, "execute").resolves();
+    });
+
+    afterEach(async () => {
+      connection.execute.restore();
+    });
+
+    it("Testando os argumentos usados na função", async () => {
+    const args =  [{ quantity: 10, productId: 2}, 4]
+    await salesModel.postSaleProduct(...args);
+    const spyCall = connection.execute.getCall(0);
+    const query = 'INSERT INTO sales_products (sale_id, product_id, quantity) VALUES (?, ?, ?);';
+    expect(spyCall.args).to.deep.equal([query, [4, 2, 10]]);
+    }) 
+  })
 })

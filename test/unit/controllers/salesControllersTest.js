@@ -72,4 +72,21 @@ describe("Testando sales da aba Controller", () => {
     })
   })
  
+  describe("Testando o post", async () => {
+    it('testando  o status do post', async () => {
+      const mock = { id: 1, name: 'Martelo de Thor', quantity: 10 };
+      sinon.stub(salesService, "post").resolves(mock);
+      await salesControllers.post(request, response);
+      expect(response.status.calledWith(201)).to.be.equal(true);;
+      salesService.post.restore();
+    })
+
+    it('testando  o body do post', async () => {
+      const mock = { id: 1, name: 'Martelo de Thor', quantity: 10 };
+      sinon.stub(salesService, "post").resolves(mock);
+      await salesControllers.post(request, response);
+      expect(response.json.calledWith(mock)).to.be.equal(true);;
+      salesService.post.restore();
+    })
+  })
 })

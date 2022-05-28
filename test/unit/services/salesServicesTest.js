@@ -62,4 +62,38 @@ describe("Testando Service sales", () => {
     salesModel.getById.restore();
     })
   })
+
+  //callCount
+  describe("Testando Post sales", async () => {    
+    it("Verificando o retorno da função", async () => {
+      const args = { body: [{ productId: 1, quantity: 6 }] };
+      sinon.stub(salesModel, "postNewSale").resolves(3);
+      sinon.stub(salesModel, "postSaleProduct").resolves();
+      const result = await salesService.post(args);
+      expect(result).to.deep.equal({ id: 3, itemsSold: [{ productId: 1, quantity: 6 }]});
+      salesModel.postNewSale.restore();
+      salesModel.postSaleProduct.restore();
+    })
+
+    it("Verificando o os argumentos usados na função salesMode.postSaleProduct", async () => {
+      const args = { body: [
+        { productId: 1, quantity: 6 },
+        { productId: 3, quantity: 7 },
+        { productId: 9, quantity: 9 }
+      ]};
+      sinon.stub(salesModel, "postNewSale").resolves(3);
+      sinon.stub(salesModel, "postSaleProduct").resolves();
+      await salesService.post(args);
+      const spyCall0 = salesModel.postSaleProduct.getCall(0);
+      const spyCall1 = salesModel.postSaleProduct.getCall(1);
+      const spyCall2 = salesModel.postSaleProduct.getCall(2);
+      const spyCall3 = salesModel.postSaleProduct.getCall(3);
+      expect(spyCall0.args).to.deep.equal([{ productId: 1, quantity: 6 }, 3]);
+      expect(spyCall1.args).to.deep.equal([{ productId: 3, quantity: 7 }, 3]);
+      expect(spyCall2.args).to.deep.equal([{ productId: 9, quantity: 9 }, 3]);
+      expect(spyCall3).to.deep.equal(null);
+      salesModel.postNewSale.restore();
+      salesModel.postSaleProduct.restore();
+    })
+  })
 })
