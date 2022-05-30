@@ -10,7 +10,7 @@ const validation = (acc, { quantity, productId }) => {
 module.exports = {
   post: (req, res, next) => {
    const vality = req.body.reduce(validation, []);
-   if (vality.length > 0) return res.status(vality[0].status).json(vality[0].message);
+   if (vality.length > 0) return res.status(vality[0].status).json({ message: vality[0].message });
     return next();
   },
 };

@@ -1,4 +1,5 @@
 const salesModel = require('../models/salesModel');
+const productsModel = require('../models/productsModel');
 const error = require('../helpers/error');
 
 module.exports = {
@@ -15,7 +16,10 @@ module.exports = {
   post: async (req) => {
     const { body } = req;
     const id = await salesModel.postNewSale();
-    body.forEach((element) => salesModel.postSaleProduct(element, id));
+    body.forEach((element) => {
+      salesModel.postSaleProduct(element, id);
+      productsModel.subtractQuantity(element);
+    });
     return { id, itemsSold: body };
   },
   put: async (req) => {
@@ -23,13 +27,18 @@ module.exports = {
     const result = await salesModel.getById(id);
     if (result.length === 0) throw error(404, 'Sale not found');
     await salesModel.deleteSaleProduct(id);
-    body.forEach((element) => salesModel.postSaleProduct(element, id));
+    result.forEach((element) => productsModel.sumQuantity(element));
+    body.forEach((element) => {
+      salesModel.postSaleProduct(element, id);
+      productsModel.subtractQuantity(element);
+    });
     return { saleId: id, itemUpdated: body };
   },
   delete: async (req) => {
     const { params: { id } } = req;
     const result = await salesModel.getById(id);
     if (result.length === 0) throw error(404, 'Sale not found');
+    result.forEach((element) => productsModel.sumQuantity(element));
     await salesModel.deleteSaleProduct(id);
     await salesModel.deleteSales(id);
   },

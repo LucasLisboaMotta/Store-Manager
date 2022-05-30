@@ -27,6 +27,16 @@ module.exports = {
     const [{ affectedRows }] = await conection.execute(query, [name, quantity, id]);
     return affectedRows;
   },
+  sumQuantity: async ({ quantity, productId }) => {
+    const query = 'UPDATE products SET quantity = quantity + ? WHERE id = ?;';
+    const [{ affectedRows }] = await conection.execute(query, [quantity, productId]);
+    return affectedRows;
+  },
+  subtractQuantity: async ({ quantity, productId }) => {
+    const query = 'UPDATE products SET quantity = quantity - ? WHERE id = ?;';
+    const [{ affectedRows }] = await conection.execute(query, [quantity, productId]);
+    return affectedRows;
+  },
   delete: async (id) => {
     const query = 'DELETE FROM products WHERE id = ?;';
     const [{ affectedRows }] = await conection.execute(query, [id]);
