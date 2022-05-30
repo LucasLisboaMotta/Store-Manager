@@ -2,11 +2,10 @@ const salesModel = require('../models/salesModel');
 const productsModel = require('../models/productsModel');
 const error = require('../helpers/error');
 
-const valitySale = async (element) => {
-  const getAllQuantityComparation = await element.map(async ({ quantity, productId }) => {
+const valitySale = async (salesArray) => {
+  const getAllQuantityComparation = await salesArray.map(async ({ quantity, productId }) => {
     const { quantity: prevQuantity } = await productsModel.getById(productId);
-    if (prevQuantity < quantity) return true;
-    return false;
+    return prevQuantity < quantity;
   });
   const resolvePromiseComparation = await Promise.all(getAllQuantityComparation);
   return resolvePromiseComparation.some((bool) => bool);
@@ -27,7 +26,6 @@ module.exports = {
     const { body } = req;
     const id = await salesModel.postNewSale();
     const verify = await valitySale(body);
-    console.log('verify', verify);
     if (verify) throw error(422, 'Such amount is not permitted to sell');
     body.forEach((element) => {
       salesModel.postSaleProduct(element, id);

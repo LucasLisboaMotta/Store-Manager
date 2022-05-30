@@ -82,6 +82,16 @@ describe("Testando sales da aba Controller", () => {
       expect(response.json.calledWith(mock)).to.be.equal(true);;
       salesService.post.restore();
     })
+
+    it('testando  o next do post', async () => {
+
+      const mensage = { status: 422, mensage: 'Such amount is not permitted to sell'};
+      sinon.stub(salesService, "post").throws(mensage);
+      const next = sinon.stub().returns();
+      await salesControllers.post(request, response, next);
+      expect(next.calledWith(mensage)).to.be.equal(true);;
+      salesService.post.restore();
+    })
   })
 
   describe("Testando o put", async () => {

@@ -1,5 +1,6 @@
 const sinon = require("sinon");
 const salesModel = require("../../../models/salesModel");
+const productsModel = require("../../../models/productsModel")
 const salesService = require("../../../services/salesServices")
 const chai = require('chai')
 const { expect } = chai
@@ -63,10 +64,14 @@ describe("Testando Service sales", () => {
       const args = { body: [{ productId: 1, quantity: 6 }] };
       sinon.stub(salesModel, "postNewSale").resolves(3);
       sinon.stub(salesModel, "postSaleProduct").resolves();
+      sinon.stub(productsModel, "getById").resolves({quantity: 50});
+      sinon.stub(productsModel, "subtractQuantity").resolves();
       const result = await salesService.post(args);
       expect(result).to.deep.equal({ id: 3, itemsSold: [{ productId: 1, quantity: 6 }]});
       salesModel.postNewSale.restore();
       salesModel.postSaleProduct.restore();
+      productsModel.getById.restore();
+      productsModel.subtractQuantity.restore();
     })
 
     it("Verificando o os argumentos usados na função salesMode.postSaleProduct", async () => {
@@ -77,6 +82,8 @@ describe("Testando Service sales", () => {
       ]};
       sinon.stub(salesModel, "postNewSale").resolves(3);
       sinon.stub(salesModel, "postSaleProduct").resolves();
+      sinon.stub(productsModel, "getById").resolves({quantity: 50});
+      sinon.stub(productsModel, "subtractQuantity").resolves();
       await salesService.post(args);
       const spyCall0 = salesModel.postSaleProduct.getCall(0);
       const spyCall1 = salesModel.postSaleProduct.getCall(1);
@@ -88,7 +95,51 @@ describe("Testando Service sales", () => {
       expect(spyCall3).to.deep.equal(null);
       salesModel.postNewSale.restore();
       salesModel.postSaleProduct.restore();
+      productsModel.getById.restore()
+      productsModel.subtractQuantity.restore();
     })
+
+    it("Verificando o os argumentos usados na função productsModel.subtractQuantity", async () => {
+      const args = { body: [
+        { productId: 1, quantity: 6 },
+        { productId: 3, quantity: 7 },
+        { productId: 9, quantity: 9 }
+      ]};
+      sinon.stub(salesModel, "postNewSale").resolves(3);
+      sinon.stub(salesModel, "postSaleProduct").resolves();
+      sinon.stub(productsModel, "getById").resolves({quantity: 50});
+      sinon.stub(productsModel, "subtractQuantity").resolves();
+      await salesService.post(args);
+      const spyCall0 = productsModel.subtractQuantity.getCall(0);
+      const spyCall1 = productsModel.subtractQuantity.getCall(1);
+      const spyCall2 = productsModel.subtractQuantity.getCall(2);
+      const spyCall3 = productsModel.subtractQuantity.getCall(3);
+      expect(spyCall0.args).to.deep.equal([{ productId: 1, quantity: 6 }]);
+      expect(spyCall1.args).to.deep.equal([{ productId: 3, quantity: 7 }]);
+      expect(spyCall2.args).to.deep.equal([{ productId: 9, quantity: 9 }]);
+      expect(spyCall3).to.deep.equal(null);
+      salesModel.postNewSale.restore();
+      salesModel.postSaleProduct.restore();
+      productsModel.getById.restore()
+      productsModel.subtractQuantity.restore();
+    })
+
+    it("Verificando erro", async () => {
+      const args = { body: [
+        { productId: 1, quantity: 6 },
+        { productId: 3, quantity: 8 },
+        { productId: 9, quantity: 3 }
+      ]};
+      sinon.stub(salesModel, "postNewSale").resolves(3);
+      sinon.stub(salesModel, "postSaleProduct").resolves();
+      sinon.stub(productsModel, "getById").resolves({quantity: 7});
+      sinon.stub(productsModel, "subtractQuantity").resolves();
+      await expect(salesService.post(args)).to.be.rejectedWith({ status: 422, message: 'Such amount is not permitted to sell'});
+      salesModel.postNewSale.restore();
+      salesModel.postSaleProduct.restore();
+      productsModel.getById.restore()
+      productsModel.subtractQuantity.restore();
+      })
   })
 
   describe("Testando Put sales", async () => {    
@@ -101,11 +152,15 @@ describe("Testando Service sales", () => {
       sinon.stub(salesModel, "deleteSaleProduct").resolves();
       sinon.stub(salesModel, "postSaleProduct").resolves();
       sinon.stub(salesModel, "getById").resolves(mock);
+      sinon.stub(productsModel, "subtractQuantity").resolves();
+      sinon.stub(productsModel, "sumQuantity").resolves();
       const result = await salesService.put(args);
       expect(result).to.deep.equal({ saleId: '10', itemUpdated: [{ productId: 1, quantity: 6 }]});
       salesModel.deleteSaleProduct.restore();
       salesModel.postSaleProduct.restore();
       salesModel.getById.restore();
+      productsModel.subtractQuantity.restore();
+      productsModel.sumQuantity.restore();
     })
 
     it("Verificando erro", async () => {
@@ -114,10 +169,14 @@ describe("Testando Service sales", () => {
       sinon.stub(salesModel, "getById").resolves(mock);
       sinon.stub(salesModel, "deleteSaleProduct").resolves();
       sinon.stub(salesModel, "postSaleProduct").resolves();
+      sinon.stub(productsModel, "subtractQuantity").resolves();
+      sinon.stub(productsModel, "sumQuantity").resolves();
       await expect(salesService.put(args)).to.be.rejectedWith({ status: 404, message: 'Sale not found'});
       salesModel.getById.restore();
       salesModel.deleteSaleProduct.restore();
       salesModel.postSaleProduct.restore();
+      productsModel.subtractQuantity.restore();
+      productsModel.sumQuantity.restore();
       })
 
     it("Verificando o os argumentos usados na função salesMode.postSaleProduct", async () => {
@@ -135,6 +194,8 @@ describe("Testando Service sales", () => {
       sinon.stub(salesModel, "getById").resolves(mock);
       sinon.stub(salesModel, "deleteSaleProduct").resolves();
       sinon.stub(salesModel, "postSaleProduct").resolves();
+      sinon.stub(productsModel, "subtractQuantity").resolves();
+      sinon.stub(productsModel, "sumQuantity").resolves();
       await salesService.put(args);
       const spyCall0 = salesModel.postSaleProduct.getCall(0);
       const spyCall1 = salesModel.postSaleProduct.getCall(1);
@@ -147,6 +208,8 @@ describe("Testando Service sales", () => {
       salesModel.getById.restore();
       salesModel.deleteSaleProduct.restore();
       salesModel.postSaleProduct.restore();
+      productsModel.subtractQuantity.restore();
+      productsModel.sumQuantity.restore();
     })
   })
 
@@ -159,6 +222,7 @@ describe("Testando Service sales", () => {
       sinon.stub(salesModel, "getById").resolves(mock);
       sinon.stub(salesModel, "deleteSaleProduct").resolves();
       sinon.stub(salesModel, "deleteSales").resolves();
+      sinon.stub(productsModel, "sumQuantity").resolves();
       await salesService.delete({ params: { id: '1'} });
       const spyCallGetById = salesModel.getById.getCall(0);
       const spyCallDeleteSaleProduct = salesModel.deleteSaleProduct.getCall(0);
@@ -169,14 +233,17 @@ describe("Testando Service sales", () => {
       salesModel.getById.restore();
       salesModel.deleteSaleProduct.restore();
       salesModel.deleteSales.restore();
+      productsModel.sumQuantity.restore();
     })
 
     it("Verificando erro", async () => {
     const mock = [];
     sinon.stub(salesModel, "getById").resolves(mock);
+    sinon.stub(productsModel, "sumQuantity").resolves();
     const args = { params: { id: '10'} };
     await expect(salesService.delete(args)).to.be.rejectedWith({ status: 404, message: 'Sale not found'});
     salesModel.getById.restore();
+    productsModel.sumQuantity.restore();
     })
   })
 
