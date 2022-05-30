@@ -4,7 +4,7 @@ const productsModel = require("../../../models/productsModel");
 const productsService = require("../../../services/productsServices")
 const chai = require('chai')
 const { expect } = chai
-// chai.use(require('chai-as-promised'))
+chai.use(require('chai-as-promised'))
 
 // const call = async () => {
 //   const call = await productsService.getById(3)
