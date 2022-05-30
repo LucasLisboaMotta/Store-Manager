@@ -6,12 +6,6 @@ const chai = require('chai')
 const { expect } = chai
 chai.use(require('chai-as-promised'))
 
-// const call = async () => {
-//   const call = await salesService.getById(3)
-//   console.log(call)
-// }
-// call();
-
 describe("Testando sales da aba Controller", () => {
   const request = {};
   const response = {};

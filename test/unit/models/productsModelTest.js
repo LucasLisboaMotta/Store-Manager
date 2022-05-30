@@ -4,12 +4,6 @@ const { expect } = require("chai");
 const connection = require("../../../models/concection");
 const productsModel = require("../../../models/productsModel");
 
-// const call = async () => {
-//   const call = await productsModel.getAll()
-//   console.log(call)
-// }
-// call();
-
 describe("Testando Model products", () => {
   describe("Testando GetAll do products", async () => {
     const mock = [

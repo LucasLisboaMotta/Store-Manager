@@ -5,12 +5,6 @@ const chai = require('chai')
 const { expect } = chai
 chai.use(require('chai-as-promised'))
 
-// const call = async () => {
-//   const call = await salesService.getById(5)
-//   console.log(call)
-// }
-// call();
-
 describe("Testando Service sales", () => {
   describe("Testando GetAll sales", async () => {
     

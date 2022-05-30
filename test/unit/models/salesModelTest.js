@@ -4,12 +4,6 @@ const { expect } = require("chai");
 const connection = require("../../../models/concection");
 const salesModel = require("../../../models/salesModel");
 
-// const call = async () => {
-//   const call = await salesModel.getAll()
-//   console.log(call)
-// }
-// call();
-
 describe("Testando Model sales", () => {
   describe("Testando GetAll do sales", async () => {
     const mock = [

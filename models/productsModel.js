@@ -17,7 +17,6 @@ module.exports = {
     return result;
   },
   post: async (name, quantity) => {
-    console.log('Entrei na criação do post');
     const query = 'INSERT INTO products (name, quantity) VALUES (?, ?)';
     const [{ insertId }] = await conection.execute(query, [name, quantity]);
     return insertId;
